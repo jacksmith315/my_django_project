@@ -70,14 +70,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
+# Database
+# SQLite has been removed in favor of PostgreSQL
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'my_django_project',
+        'NAME': os.environ.get('POSTGRES_DB', 'my_django_project'),
         'USER': os.environ.get('POSTGRES_USER', 'jacksmith'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     }
 }
 
