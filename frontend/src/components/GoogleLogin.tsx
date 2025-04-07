@@ -25,6 +25,13 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onLoginSuc
         
         console.log('Google user info:', userInfoResponse.data);
         
+        // Get CSRF token first
+        const csrfResponse = await axios.get('http://localhost:8000/api/auth/csrf/', {
+          withCredentials: true
+        });
+        
+        const csrfToken = csrfResponse.data.csrfToken;
+        
         // Send to our backend
         try {
           const backendResponse = await axios.post(
@@ -37,6 +44,7 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onLoginSuc
               withCredentials: true,
               headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
               },
             }
           );

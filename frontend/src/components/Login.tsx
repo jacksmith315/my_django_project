@@ -12,6 +12,17 @@ interface LoginFormData {
   password: string;
 }
 
+interface GoogleLoginResponse {
+  user: {
+    email: string;
+    username: string;
+  };
+  tokens: {
+    access: string;
+    refresh: string;
+  };
+}
+
 const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<LoginFormData>({
@@ -66,24 +77,33 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
     }
   };
 
-  const handleGoogleLoginSuccess = (response: any) => {
-    if (!response?.access_token) {
-      console.error('Invalid login response:', response);
-      return;
-    }
-
+  const handleGoogleLoginSuccess = (response: GoogleLoginResponse) => {
     try {
-      localStorage.setItem('access_token', response.access_token);
-      if (response.refresh_token) {
-        localStorage.setItem('refresh_token', response.refresh_token);
+      if (!response?.tokens?.access) {
+        console.error('Invalid login response:', response);
+        setError('Invalid login response from server');
+        return;
       }
+
+      localStorage.setItem('access_token', response.tokens.access);
+      if (response.tokens.refresh) {
+        localStorage.setItem('refresh_token', response.tokens.refresh);
+      }
+      
+      // Store user info if needed
+      localStorage.setItem('user_email', response.user.email);
+      localStorage.setItem('username', response.user.username);
+      
       setIsAuthenticated(true);
       navigate('/items', { replace: true });
     } catch (error) {
       console.error('Error during login:', error);
+      setError('Failed to process login response');
       setIsAuthenticated(false);
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user_email');
+      localStorage.removeItem('username');
     }
   };
 
