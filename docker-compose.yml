@@ -21,8 +21,8 @@ services:
     build: ./backend
     volumes:
       - ./backend:/app
-      - ./backend/media:/app/media
-      - ./backend/static:/app/static
+      - static_volume:/app/static
+      - media_volume:/app/media
     environment:
       - DEBUG=${DEBUG:-False}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
@@ -46,6 +46,8 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+      - static_volume:/usr/share/nginx/html/static
+      - media_volume:/usr/share/nginx/html/media
     ports:
       - "80:80"
     depends_on:
@@ -55,3 +57,5 @@ services:
 
 volumes:
   postgres_data:
+  static_volume:
+  media_volume:
