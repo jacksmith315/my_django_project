@@ -24,18 +24,22 @@ cp .env.example .env
 
 3. Update the `.env` file with your configuration:
 ```env
-# Django settings
-DEBUG=False
-DJANGO_SECRET_KEY=your-secure-secret-key
-
-# Database settings
+# PostgreSQL Configuration
 POSTGRES_DB=my_django_project
-POSTGRES_USER=your_username
-POSTGRES_PASSWORD=your_secure_password
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
 
-# Google OAuth settings
+# Django Configuration
+DEBUG=False
+DJANGO_SECRET_KEY=your-secret-key-here
+
+# Google OAuth Configuration
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Frontend Configuration
+VITE_API_URL=http://localhost:8000/api
+VITE_GOOGLE_CLIENT_ID=your-google-client-id
 ```
 
 ### Building and Running with Docker
@@ -56,9 +60,9 @@ docker-compose up -d
 ```
 
 3. Access the application:
-- Frontend: http://localhost
-- Backend API: http://localhost/api
-- Admin interface: http://localhost/admin
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8000/api
+- Admin interface: http://localhost:8000/admin
 
 ### Managing the Application
 
@@ -131,7 +135,7 @@ python manage.py migrate
 
 5. Start the development server:
 ```bash
-python manage.py runserver
+python manage.py runserver 8000
 ```
 
 ### Frontend Setup
@@ -142,9 +146,15 @@ cd frontend
 npm install
 ```
 
-2. Start the development server:
+2. Set up environment variables:
 ```bash
-npm run dev
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+3. Start the development server:
+```bash
+npm run dev -- --port 5173
 ```
 
 ## 📁 Project Structure
@@ -168,26 +178,37 @@ my_django_project/
 
 ## 🔒 Security Notes
 
-1. Never commit the `.env` file
+1. Never commit the `.env` file or any files containing sensitive information
 2. Regularly update dependencies
 3. Use strong passwords for database and admin accounts
 4. Keep your Google OAuth credentials secure
+5. Store sensitive information in environment variables
 
 ## 🛠 Troubleshooting
 
 ### Common Issues
 
 1. **Port conflicts**
-   - Ensure ports 80, 5432, and 8000 are not in use
+   - Ensure ports 5173 (frontend), 8000 (backend), and 5432 (database) are not in use
    - Change ports in docker-compose.yml if needed
+   - For development, you can specify different ports using:
+     - Frontend: `npm run dev -- --port <port>`
+     - Backend: `python manage.py runserver <port>`
 
 2. **Database connection issues**
    - Check PostgreSQL credentials in .env
    - Ensure postgres service is healthy
+   - Verify the database host and port settings
 
 3. **Frontend not connecting to backend**
-   - Verify VITE_API_URL in .env
-   - Check nginx configuration
+   - Verify VITE_API_URL in .env matches your backend URL
+   - Check CORS settings in backend
+   - Ensure Google OAuth credentials are correctly configured
+
+4. **Environment Variables**
+   - Make sure all required environment variables are set in .env
+   - Double-check Google OAuth credentials
+   - Verify API URLs are correct for your environment
 
 ### Getting Help
 
