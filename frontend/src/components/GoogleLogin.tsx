@@ -2,6 +2,7 @@ import React from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import googleIcon from '../assets/google.svg';
+import api from '../utils/api';
 
 interface GoogleLoginButtonProps {
   onLoginSuccess: (response: any) => void;
@@ -25,27 +26,13 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onLoginSuc
         
         console.log('Google user info:', userInfoResponse.data);
         
-        // Get CSRF token first
-        const csrfResponse = await axios.get('/api/auth/csrf/', {
-          withCredentials: true
-        });
-        
-        const csrfToken = csrfResponse.data.csrfToken;
-        
         // Send to our backend
         try {
-          const backendResponse = await axios.post(
+          const backendResponse = await api.post(
             '/api/auth/google/',
             {
               access_token: response.access_token,
               user_data: userInfoResponse.data
-            },
-            {
-              withCredentials: true,
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
-              },
             }
           );
           

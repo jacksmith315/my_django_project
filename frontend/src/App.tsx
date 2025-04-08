@@ -49,8 +49,13 @@ function App() {
     );
   }
 
+  if (!import.meta.env.VITE_GOOGLE_CLIENT_ID) {
+    console.error('Google Client ID not found in environment variables');
+    return <div>Error: Google Client ID not configured</div>;
+  }
+
   return (
-    <GoogleOAuthProvider clientId="224743752520-jdgbmrtc51nj817om7vjdp9pimle2f2i.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <QueryClientProvider client={queryClient}>
         <Router>
           <Routes>
