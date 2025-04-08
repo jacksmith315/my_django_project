@@ -17,32 +17,41 @@ git clone https://github.com/jacksmith315/my_django_project.git
 cd my_django_project
 ```
 
-2. Create environment file:
+2. Create and configure environment variables (REQUIRED before building containers):
 ```bash
+# Copy the example environment file
 cp .env.example .env
+
+# Open .env in your text editor and update these required values:
+# - DJANGO_SECRET_KEY (generate a secure key)
+# - GOOGLE_CLIENT_ID (from Google Cloud Console)
+# - GOOGLE_CLIENT_SECRET (from Google Cloud Console)
+# - VITE_GOOGLE_CLIENT_ID (same as GOOGLE_CLIENT_ID)
 ```
 
-3. Update the `.env` file with your configuration:
+3. Required environment variables in `.env`:
 ```env
-# PostgreSQL Configuration
+# PostgreSQL Configuration (can keep defaults for development)
 POSTGRES_DB=my_django_project
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 
-# Django Configuration
+# Django Configuration (must change these)
 DEBUG=False
-DJANGO_SECRET_KEY=your-secret-key-here
+DJANGO_SECRET_KEY=your-secret-key-here  # Change this!
 
-# Google OAuth Configuration
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
+# Google OAuth Configuration (must change these)
+GOOGLE_CLIENT_ID=your-google-client-id      # Change this!
+GOOGLE_CLIENT_SECRET=your-google-client-secret  # Change this!
 
-# Frontend Configuration
+# Frontend Configuration (must change this)
 VITE_API_URL=http://localhost:8000/api
-VITE_GOOGLE_CLIENT_ID=your-google-client-id
+VITE_GOOGLE_CLIENT_ID=your-google-client-id  # Same as GOOGLE_CLIENT_ID above
 ```
 
 ### Building and Running with Docker
+
+⚠️ Important: Make sure you've completed the environment setup above before proceeding!
 
 1. Build the containers:
 ```bash
@@ -59,7 +68,16 @@ Or run in detached mode:
 docker-compose up -d
 ```
 
-3. Access the application:
+3. Verify the environment:
+```bash
+# Check if all required environment variables are set
+docker-compose config
+
+# Check container logs for any environment-related issues
+docker-compose logs
+```
+
+4. Access the application:
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:8000/api
 - Admin interface: http://localhost:8000/admin
@@ -188,27 +206,30 @@ my_django_project/
 
 ### Common Issues
 
-1. **Port conflicts**
+1. **Environment Variables**
+   - Ensure `.env` file exists and is properly configured BEFORE building containers
+   - Required variables:
+     - DJANGO_SECRET_KEY
+     - GOOGLE_CLIENT_ID
+     - GOOGLE_CLIENT_SECRET
+     - VITE_GOOGLE_CLIENT_ID
+   - Run `docker-compose config` to verify variables are being read
+   - If changing variables, rebuild containers: `docker-compose up --build`
+
+2. **Port conflicts**
    - Ensure ports 5173 (frontend), 8000 (backend), and 5432 (database) are not in use
    - Change ports in docker-compose.yml if needed
-   - For development, you can specify different ports using:
-     - Frontend: `npm run dev -- --port <port>`
-     - Backend: `python manage.py runserver <port>`
+   - Stop any local development servers before running Docker containers
 
-2. **Database connection issues**
+3. **Database connection issues**
    - Check PostgreSQL credentials in .env
    - Ensure postgres service is healthy
    - Verify the database host and port settings
 
-3. **Frontend not connecting to backend**
+4. **Frontend not connecting to backend**
    - Verify VITE_API_URL in .env matches your backend URL
    - Check CORS settings in backend
    - Ensure Google OAuth credentials are correctly configured
-
-4. **Environment Variables**
-   - Make sure all required environment variables are set in .env
-   - Double-check Google OAuth credentials
-   - Verify API URLs are correct for your environment
 
 ### Getting Help
 
